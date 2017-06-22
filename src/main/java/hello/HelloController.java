@@ -8,8 +8,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-
-
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.client.RestTemplate;
 import com.sun.net.ssl.SSLContext;
 import javax.net.ssl.HttpsURLConnection;
@@ -20,6 +19,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
 
 import java.io.FileInputStream;
@@ -53,7 +54,7 @@ public class HelloController {
     }
 
     @GetMapping
-    public String helloFacebook(Model model) {
+    public @ResponseBody ResponseEntity<String> helloFacebook(Model model) {
 //        if (connectionRepository.findPrimaryConnection(Facebook.class) == null) {
 //            return "redirect:/connect/facebook";
 //        }
@@ -106,16 +107,11 @@ public class HelloController {
     	try{
 	    	String response = restTemplate.postForObject(validationURL, merchantValidationRequest, String.class);
 	    	System.out.println(response);
+	    	return new ResponseEntity<String>(response, HttpStatus.OK);
     	}catch(Exception e ){
-    		System.out.println("KO");
     		logger.info(""+e);
-    		return "KO";
+    		return new ResponseEntity<String>(e.toString(), HttpStatus.INTERNAL_SERVER_ERROR);
     	}
-    	
-    	return "OK";
-//    	log.info(response);
-
-    	
     	
     }
 
